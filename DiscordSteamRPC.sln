@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamRPC", "SteamRPC\SteamRPC.csproj", "{E85186DA-D8D4-413C-B0E0-A58DDB6223EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordSteamRPC", "SteamRPC\DiscordSteamRPC.csproj", "{E85186DA-D8D4-413C-B0E0-A58DDB6223EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
