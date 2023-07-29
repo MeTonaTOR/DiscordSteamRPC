@@ -5,14 +5,16 @@ using System.Windows.Forms;
 
 using SimpleJSON;
 using System.Drawing;
-using System.Runtime.Serialization;
+using DiscordRPC;
+using Button = DiscordRPC.Button;
 
 namespace SteamRPC
 {
     public partial class SettingsWindow : Form
     {
         private Timer refreshUI;
-        private DiscordRpc.RichPresence _presence = new DiscordRpc.RichPresence();
+        private static DiscordRpcClient discordclient;
+        private Boolean discordInitialized = false;
 
         String DiscordID            = "1133470229050163270";
         JSONNode json_rpc           = JSON.Parse(new WebClient().DownloadString("http://dsrpc.metonator.pl/discordappids.json"));
@@ -75,6 +77,7 @@ namespace SteamRPC
                 client.DownloadStringAsync(StringToUri);
                 client.DownloadStringCompleted += (sender2, e2) => {
                     try {
+                        RichPresence presence = new RichPresence();
                         JSONNode json = JSON.Parse(e2.Result);
 
                         steamWhoLogged.Text = json["persona_name"];
@@ -82,31 +85,56 @@ namespace SteamRPC
 
                         if (json["in_game"]["name"] != null) {
                             String gamename = json["in_game"]["name"];
-                            var handlers = new DiscordRpc.EventHandlers();
 
                             steamInGameStatus.Text = gamename;
                             steamInGameStatus.ForeColor = color_ingame_text;
                             steamWhoLogged.ForeColor = color_ingame_text;
 
                             if (json_rpc[gamename] != null) {
-                                DiscordRpc.Initialize(json_rpc[gamename], ref handlers, true, "");
-                                _presence.largeImageKey = "logo";
-                                _presence.largeImageText = json["currentUser"];
+                                if (discordInitialized == false) {
+                                    discordclient = new DiscordRpcClient(json_rpc[gamename]);
+                                    discordclient.SkipIdenticalPresence = true;
+                                    discordclient.ShutdownOnly = true;
+
+                                    discordclient.Initialize();
+                                    discordInitialized = true;
+                                }
                             } else {
-                                DiscordRpc.Initialize(DiscordID, ref handlers, true, "");
-                                _presence.details = json["in_game"]["name"];
-                                _presence.largeImageKey = "logo";
-                                _presence.largeImageText = json["currentUser"];
+                                if (discordInitialized == false) {
+                                    discordclient = new DiscordRpcClient(DiscordID);
+                                    discordclient.SkipIdenticalPresence = true;
+                                    discordclient.ShutdownOnly = true;
+
+                                    discordclient.Initialize();
+                                    discordInitialized = true;
+                                }
+
+                                presence.Details = json["in_game"]["name"];
+                            }
+
+                            presence.Assets = new Assets() {
+                                LargeImageKey = "logo",
+                                LargeImageText = json["persona_name"],
+                            };
+
+                            if (json["in_game"]["name"] + "_steamid" != null) {
+                                presence.Buttons = new Button[] {
+                                    new Button() { Label = "View on Steam", Url = "http://store.steampowered.com/app/" +  json_rpc[(json["in_game"]["name"] + "_steamid")] }
+                                };
                             }
 
                             if (json["in_game"]["rich_presence"] != String.Empty) {
-                                _presence.state = json["in_game"]["rich_presence"];
+                                presence.State = json["in_game"]["rich_presence"];
                                 steamInGameStatus.Text += " (" + json["in_game"]["rich_presence"] + ")";
                             } else {
-                                _presence.state = "Initializing...";
+                                presence.State = "Initializing...";
                             }
 
+
                             loggedPanel.BackColor = color_ingame_bg;
+                            if (discordInitialized) {
+                                discordclient.SetPresence(presence);
+                            }
                         } else {
                             steamInGameStatus.Text = "Online";
                             steamInGameStatus.ForeColor = color_loggedin_text;
@@ -114,11 +142,11 @@ namespace SteamRPC
 
                             loggedPanel.BackColor = color_loggedin_bg;
 
-                            DiscordRpc.Shutdown();
+                            if(discordInitialized) {
+                                discordclient.Dispose();
+                                discordInitialized = false;
+                            }
                         }
-
-                        _presence.instance = true;
-                        DiscordRpc.UpdatePresence(_presence);
                     } catch (Exception) {
                         //Failed to load steam status
                     }
@@ -126,7 +154,6 @@ namespace SteamRPC
             } else {
                 ((SettingsWindow)this).Height = 205;
                 loggedPanel.Hide();
-                //Clean avatar too
             }
         }
     }

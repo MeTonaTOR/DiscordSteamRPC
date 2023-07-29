@@ -31,13 +31,13 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsWindow));
             this.tabs = new System.Windows.Forms.TabControl();
             this.settingsPage = new System.Windows.Forms.TabPage();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.settingsCheck_Autorun = new System.Windows.Forms.CheckBox();
             this.loggedPanel = new System.Windows.Forms.Panel();
             this.steamInGameStatus = new System.Windows.Forms.Label();
             this.steamWhoLogged = new System.Windows.Forms.Label();
             this.steamAvatar = new System.Windows.Forms.PictureBox();
-            this.settingsCheck_Autorun = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
             this.tabs.SuspendLayout();
             this.settingsPage.SuspendLayout();
             this.loggedPanel.SuspendLayout();
@@ -65,6 +65,36 @@
             this.settingsPage.TabIndex = 0;
             this.settingsPage.Text = "Settings";
             this.settingsPage.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Enabled = false;
+            this.button2.Location = new System.Drawing.Point(250, 85);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(237, 23);
+            this.button2.TabIndex = 2;
+            this.button2.Text = "Override Discord Application ID per Game";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Enabled = false;
+            this.button1.Location = new System.Drawing.Point(6, 85);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(237, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Exclude Games from RPC";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // settingsCheck_Autorun
+            // 
+            this.settingsCheck_Autorun.AutoSize = true;
+            this.settingsCheck_Autorun.Location = new System.Drawing.Point(6, 62);
+            this.settingsCheck_Autorun.Name = "settingsCheck_Autorun";
+            this.settingsCheck_Autorun.Size = new System.Drawing.Size(153, 17);
+            this.settingsCheck_Autorun.TabIndex = 0;
+            this.settingsCheck_Autorun.Text = "Launch at windows startup";
+            this.settingsCheck_Autorun.UseVisualStyleBackColor = true;
             // 
             // loggedPanel
             // 
@@ -107,36 +137,6 @@
             this.steamAvatar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.steamAvatar.TabIndex = 0;
             this.steamAvatar.TabStop = false;
-            // 
-            // settingsCheck_Autorun
-            // 
-            this.settingsCheck_Autorun.AutoSize = true;
-            this.settingsCheck_Autorun.Location = new System.Drawing.Point(6, 62);
-            this.settingsCheck_Autorun.Name = "settingsCheck_Autorun";
-            this.settingsCheck_Autorun.Size = new System.Drawing.Size(153, 17);
-            this.settingsCheck_Autorun.TabIndex = 0;
-            this.settingsCheck_Autorun.Text = "Launch at windows startup";
-            this.settingsCheck_Autorun.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(6, 85);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(237, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Exclude Games from RPC";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Enabled = false;
-            this.button2.Location = new System.Drawing.Point(250, 85);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(237, 23);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Override Discord Application ID per Game";
-            this.button2.UseVisualStyleBackColor = true;
             // 
             // SettingsWindow
             // 
