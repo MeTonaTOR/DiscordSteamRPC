@@ -5,6 +5,7 @@ using System.Windows.Forms;
 
 using SimpleJSON;
 using System.Drawing;
+using System.Runtime.Serialization;
 
 namespace SteamRPC
 {
@@ -13,19 +14,14 @@ namespace SteamRPC
         private Timer refreshUI;
         private DiscordRpc.RichPresence _presence = new DiscordRpc.RichPresence();
 
-        String DiscordID        = "1133470229050163270";
-        JSONNode json_rpc = JSON.Parse(new WebClient().DownloadString("http://dsrpc.metonator.pl/discordappids.json"));
+        String DiscordID            = "1133470229050163270";
+        JSONNode json_rpc           = JSON.Parse(new WebClient().DownloadString("http://dsrpc.metonator.pl/discordappids.json"));
 
-        Int32 color_loggedin    = 0x449bd8;
-        Int32 color_ingame      = 0xb0e69f;
+        Color color_loggedin_text   = Color.FromArgb(68, 155, 216);
+        Color color_loggedin_bg     = Color.FromArgb(20, 46, 64);
 
-        protected override CreateParams CreateParams {
-            get {
-                CreateParams myCp = base.CreateParams;
-                myCp.ClassStyle = myCp.ClassStyle | 0x200;
-                return myCp;
-            }
-        }
+        Color color_ingame_text     = Color.FromArgb(176, 230, 159);
+        Color color_ingame_bg       = Color.FromArgb(26, 34, 23);
 
         public SettingsWindow() {
             InitializeComponent();
@@ -36,9 +32,28 @@ namespace SteamRPC
 
             refreshUI = new Timer();
             refreshUI.Tick += new EventHandler(checkStatusRPC);
-            refreshUI.Interval = 5000; // in miliseconds
+            refreshUI.Interval = 2000;
             refreshUI.Start();
 
+            this.FormClosing += (s, e) => {
+                e.Cancel = true;
+                Hide();
+            };
+
+            /* AUTOSTART SETTING */
+            if (DiscordSteamRPC.Properties.Settings.Default.AutorunEnabled) settingsCheck_Autorun.Checked = true;
+            settingsCheck_Autorun.CheckedChanged += (s, e) => {
+                RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+                if (settingsCheck_Autorun.Checked) {
+                    rk.SetValue(Application.ProductName, Application.ExecutablePath);
+                    DiscordSteamRPC.Properties.Settings.Default.AutorunEnabled = true;
+                } else {
+                    rk.DeleteValue(Application.ProductName, false);
+                    DiscordSteamRPC.Properties.Settings.Default.AutorunEnabled = false;
+                }
+                DiscordSteamRPC.Properties.Settings.Default.Save();
+            };
         }
 
         private void checkStatusRPC(object sender, EventArgs e) {
@@ -47,8 +62,9 @@ namespace SteamRPC
             Int32 SteamID3 = (int)SteamActiveProcess.GetValue("ActiveUser");
 
             if(SteamID3 != 0) {
+                ((SettingsWindow)this).Height = 250;
+                
                 loggedPanel.Show();
-                loggedPanel.BackColor = Color.FromArgb(255, 22, 29, 36);
 
                 var client = new WebClient();
 
@@ -69,8 +85,8 @@ namespace SteamRPC
                             var handlers = new DiscordRpc.EventHandlers();
 
                             steamInGameStatus.Text = gamename;
-                            steamInGameStatus.ForeColor = Color.FromArgb(color_ingame);
-                            steamWhoLogged.ForeColor = Color.FromArgb(color_ingame);
+                            steamInGameStatus.ForeColor = color_ingame_text;
+                            steamWhoLogged.ForeColor = color_ingame_text;
 
                             if (json_rpc[gamename] != null) {
                                 DiscordRpc.Initialize(json_rpc[gamename], ref handlers, true, "");
@@ -86,11 +102,18 @@ namespace SteamRPC
                             if (json["in_game"]["rich_presence"] != String.Empty) {
                                 _presence.state = json["in_game"]["rich_presence"];
                                 steamInGameStatus.Text += " (" + json["in_game"]["rich_presence"] + ")";
+                            } else {
+                                _presence.state = "Initializing...";
                             }
+
+                            loggedPanel.BackColor = color_ingame_bg;
                         } else {
                             steamInGameStatus.Text = "Online";
-                            steamInGameStatus.ForeColor = Color.FromArgb(color_loggedin);
-                            steamWhoLogged.ForeColor = Color.FromArgb(color_loggedin);
+                            steamInGameStatus.ForeColor = color_loggedin_text;
+                            steamWhoLogged.ForeColor = color_loggedin_text;
+
+                            loggedPanel.BackColor = color_loggedin_bg;
+
                             DiscordRpc.Shutdown();
                         }
 
@@ -101,6 +124,7 @@ namespace SteamRPC
                     }
                 };
             } else {
+                ((SettingsWindow)this).Height = 205;
                 loggedPanel.Hide();
                 //Clean avatar too
             }
