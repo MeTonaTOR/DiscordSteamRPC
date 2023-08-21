@@ -34,7 +34,7 @@ namespace SteamRPC
 
             refreshUI = new Timer();
             refreshUI.Tick += new EventHandler(checkStatusRPC);
-            refreshUI.Interval = 2000;
+            refreshUI.Interval = 5000;
             refreshUI.Start();
 
             this.FormClosing += (s, e) => {
@@ -113,7 +113,7 @@ namespace SteamRPC
                             }
 
                             presence.Assets = new Assets() {
-                                LargeImageKey = "logo",
+                                LargeImageKey = "http://dsrpc.metonator.pl/DiscordSteamRPC_Logo.png",
                                 LargeImageText = json["persona_name"],
                             };
 

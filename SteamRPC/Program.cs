@@ -14,11 +14,6 @@ namespace SteamRPC {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            if (!File.Exists("discord-rpc.dll")) {
-                MessageBox.Show("Discord library not found, please re-download the archive from GitHub", "DiscordSteamRPC - Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Process.Start("https://github.com/MeTonaTOR/DiscordSteamRPC/releases/latest");
-            }
-
             Mutex isRunningCheck = new Mutex(false, "DiscordSteamRPC-MeTonaTOR");
 
             if (isRunningCheck.WaitOne(0, false)) {
